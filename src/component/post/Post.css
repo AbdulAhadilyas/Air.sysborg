@@ -1,0 +1,60 @@
+
+.list {
+    width: 95%;
+    border-radius: 30px;
+  }
+  ul > li {
+    list-style: none;
+  }
+  .list > li {
+    display: flex;
+    padding: 20px;
+    background: var(--card-color);
+    border-radius: 30px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+  }
+  
+  
+  .info {
+    margin-right: 30px;
+    width: 150px;
+    /* border: 1px solid black; */
+    padding: 0px 20px 0px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .equal {
+    padding: 6px;
+    width: 120px;
+  }
+  .ip {
+    font-weight: bold;
+  }
+  .time {
+    color:var(--text-color);
+  }
+  .delte-button button {
+    border: none;
+    background-color: transparent;
+    font-size: 1.2rem;
+    color: #ff8686;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 550px) {
+    .list > li {
+      flex-direction: column;
+    }
+   
+  }
+  
+  @media screen and (max-width: 1200px) {
+
+    .input-add-text,.button-box{
+      margin-top: 5px;
+    }
+  }
