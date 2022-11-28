@@ -24,13 +24,17 @@
 }
 .input-class .input-with-btn > input {
   padding: 8.5px 0px 8.5px 20px;
-  border-radius: 30px;
   border: none;
   width: 13vw;
   min-width: 150px;
   background-color: transparent;
   color: var(--text-color);
   font-size: 1.2rem;
+border-top-left-radius: 30px;
+border-bottom-left-radius: 30px;
+}
+.input-class .input-with-btn .classValid {
+border: 1px solid red;
 }
 .input-class .input-with-btn > button {
   background: var(--bg-colour);
@@ -74,6 +78,10 @@
   background: var(--input-colour);
   color: var(--text-color);
 }
+.input-add-text .isValid{
+  border: 1.5px solid rgb(223, 36, 36);
+}
+
 
 .image-upload > input {
   display: none;
@@ -159,4 +167,12 @@ input {
   .list > li {
     flex-direction: column;
   }
+}
+.wrapper{
+  display: flex;
+  flex-wrap: wrap;
+}
+.wrapper2{
+  display: flex;
+  flex-wrap: wrap;
 }

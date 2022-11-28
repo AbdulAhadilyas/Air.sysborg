@@ -6,11 +6,10 @@ export default function Danger({ errorTxt }) {
   const [timeOut, setTimeOut] = useState(true)
   setTimeout(() => {
     setTimeOut(false)
-  }, 3000);
-
+  }, 5000);
   return (
     <>
-      {timeOut ? <Stack sx={{ width: "100%" }} spacing={2}>
+      {(timeOut )? <Stack sx={{ width: "100%" }} spacing={2}>
         <Alert variant="filled" severity="error">
           {errorTxt}
         </Alert>
