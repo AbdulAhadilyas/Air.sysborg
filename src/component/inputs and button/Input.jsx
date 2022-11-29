@@ -20,11 +20,11 @@ export default function Input() {
       classId: "",
     },
     validationSchema: classIdSchema,
-    onSubmit: (values) => {
+    onSubmit:async (values) => {
       console.log(JSON.stringify(values));
       setStdClassId(values)
-  
     },
+    
   });
   
   const inputSchema = Yup.object().shape({
@@ -41,12 +41,11 @@ export default function Input() {
     // validateOnChange:false,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
-      
+ 
     },
   });
-  
 
- console.log("hello")
+  console.log(stdClassId)
 
 
   return (
