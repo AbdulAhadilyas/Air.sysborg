@@ -12,7 +12,8 @@ html[data-theme='dark'] {
   --body-backgorund: #181818;
   --text-color: #ededed;
   /* --bg-colour: linear-gradient(99deg, #eb3349,  #f45c43); */
-  --bg-colour:linear-gradient(135deg, #ff00ba 0%, #fae713 100%);
+  --bg-colour: linear-gradient( 68.1deg,  rgba(152,25,175,1) -0.1%, rgba(149,22,182,1) 8.2%, rgba(92,21,173,1) 49.1%, rgba(88,22,168,1) 57.9%, rgba(74,17,177,1) 85.2%, rgba(65,17,154,1) 100.1% );
+
   --card-color: #272727;
   --input-colour: #353535;
   --hover:#F54748;

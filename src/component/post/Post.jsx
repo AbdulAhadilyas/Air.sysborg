@@ -1,6 +1,7 @@
 import React from "react";
 import "./Post.css"
 const Post = () => {
+  console.log("helo")
   return (
     <li>
             <div class="info">

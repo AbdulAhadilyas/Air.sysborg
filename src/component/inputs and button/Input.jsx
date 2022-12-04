@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Input.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -6,8 +6,11 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Danger from "../Alert/Danger";
 import { useState } from "react";
+import axios from 'axios';
+
 export default function Input() {
   const [stdClassId, setStdClassId] = useState({});
+  const [textInput, setTextInput] = useState({});
   const classIdSchema = Yup.object().shape({
     classId: Yup.string()
       .min(2, "Too Short!")
@@ -20,13 +23,26 @@ export default function Input() {
       classId: "",
     },
     validationSchema: classIdSchema,
-    onSubmit:async (values) => {
-      console.log(JSON.stringify(values));
+    onSubmit: async (values) => {
+      console.log(values);
       setStdClassId(values)
+
+    axios.get(`http://localhost:8000/data/getItem/${values.classId}`)
+        .then(function (response) {
+          // handle success
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+        .finally(function () {
+          // always executed
+        });
     },
-    
-  });
-  
+  }
+  );
+
   const inputSchema = Yup.object().shape({
     inputText: Yup.string()
       .min(5, "Too Short!")
@@ -35,30 +51,34 @@ export default function Input() {
   const classInput = useFormik({
     initialValues: {
       inputText: "",
-      
+
     },
     validationSchema: inputSchema,
     // validateOnChange:false,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
- 
+      setTextInput(values)
+
+
+
+
     },
   });
 
-  console.log(stdClassId)
+
 
 
   return (
     <>
       <div className="alert">
         <div className="alert-left">
-          { Boolean(classId.errors.classId) ? (
+          {Boolean(classId.errors.classId) ? (
             <Danger errorTxt={classId.errors.classId} />
           ) : null}
           {
-          Boolean(classInput.errors.inputText) ? (
-            <Danger errorTxt={classInput.errors.inputText} />
-          ) : null}
+            Boolean(classInput.errors.inputText) ? (
+              <Danger errorTxt={classInput.errors.inputText} />
+            ) : null}
         </div>
       </div>
       <div className="input-box">
@@ -70,8 +90,7 @@ export default function Input() {
                 placeholder="Class ID"
                 onChange={classId.handleChange}
                 name="classId"
-                onBlur={classId.handleBlur}
-                className={Boolean(classId.errors.classId)?"classValid" : ""  }
+                className={Boolean(classId.errors.classId) ? "classValid" : ""}
               />
               <button type="submit">
                 <FontAwesomeIcon icon={faCheck} />
@@ -86,17 +105,17 @@ export default function Input() {
               placeholder="Add Item "
               onChange={classInput.handleChange}
               name="inputText"
-              className={Boolean(classInput.errors.inputText)?"isValid" : ""}
-              onBlur={ classInput.handleBlur}
+              className={Boolean(classInput.errors.inputText) ? "isValid" : ""}
+              onBlur={classInput.handleBlur}
             />
-          </div> 
+          </div>
         </form>
         <div className="button-box">
           <div className="button-pad">
             <div className="btn-add">
-            <button className="button-36" type="submit" form="form1" value="Submit">
-            Submit
-          </button>
+              <button className="button-36" type="submit" form="form1" value="Submit">
+                Submit
+              </button>
             </div>
           </div>
           <div className="button-pad">
