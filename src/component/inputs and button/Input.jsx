@@ -6,11 +6,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Danger from "../Alert/Danger";
 import { useState } from "react";
-import axios from 'axios';
+import { Socket } from "socket.io-client";
 
-export default function Input() {
-  const [stdClassId, setStdClassId] = useState({});
-  const [textInput, setTextInput] = useState({});
+
+export default function Input({getClass,getInput}) {
+ 
+  const [idFound, setIdFound] = useState(false);
+
   const classIdSchema = Yup.object().shape({
     classId: Yup.string()
       .min(2, "Too Short!")
@@ -25,24 +27,32 @@ export default function Input() {
     validationSchema: classIdSchema,
     onSubmit: async (values) => {
       console.log(values);
-      setStdClassId(values)
+      getClass(values)
 
-    axios.get(`http://localhost:8000/data/getItem/${values.classId}`)
-        .then(function (response) {
-          // handle success
-          console.log(response.data);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .finally(function () {
-          // always executed
-        });
+      // setStdClassId(values)
+      // await axios.get(`http://localhost:8000/data/getItem/${values.classId}`)
+      //   .then(function (response) {
+      //     console.log(response.data);
+      //     if (response.data === "No Class Found") {
+      //       setIdFound(true)
+      //       setClassData("No Class Found")
+      //     } else {
+      //       console.log("no error")
+      //       setClassData(response.data)
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   })
+      //   .finally(function () {
+
+      //   });
+      // setTimeout(() => {
+      //   setIdFound(false)
+      // }, 2000);
     },
   }
   );
-
   const inputSchema = Yup.object().shape({
     inputText: Yup.string()
       .min(5, "Too Short!")
@@ -57,13 +67,10 @@ export default function Input() {
     // validateOnChange:false,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
-      setTextInput(values)
-
-
-
-
+      getInput(values)
     },
   });
+
 
 
 
@@ -72,6 +79,9 @@ export default function Input() {
     <>
       <div className="alert">
         <div className="alert-left">
+          {/* {idFound ? (
+            <Danger errorTxt={classData} />
+          ) : null} */}
           {Boolean(classId.errors.classId) ? (
             <Danger errorTxt={classId.errors.classId} />
           ) : null}
