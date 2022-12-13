@@ -23,11 +23,20 @@ export const App = () => {
     });
   }, [])
 
+ 
+
   useEffect(() => {
-    socket.on("getData", (data) => {
-      console.log("socketData", data)
-    })
+    socket.on('chat message', (msg) => {
+      console.log(msg)
+      setToDoData([...toDoData , msg])
+      console.log(toDoData)
+    });
   }, [socket])
+
+  
+
+
+
 
   const getClass = async (val) => {
     setClassID(val.classId)
@@ -65,24 +74,25 @@ export const App = () => {
       await axios.post(`http://localhost:8000/data/addItem/${data[0]._id}`, {
         "text": val.inputText,
         "cType": classID.toString()
-
       })
         .then(function (response) {
           console.log(response.data);
-
+          socket.emit('chat message', {
+            "text": val.inputText,
+            "cType": classID.toString()
+          });
         })
         .catch(function (error) {
           console.log(error);
         })
         .finally(function () {
-
         });
     }
+    
     setIsCLick(!isCLick)
   }
   useEffect( () => {
     const getAllData = async () =>{
-
     await axios.get(`http://localhost:8000/data/getItem/${classID}`)
       .then(function (response) {
         console.log(response.data)
@@ -99,16 +109,15 @@ export const App = () => {
         }
       })
       .catch(function (error) {
-        console.log(error);
+       
       })
       .finally(function () {
 
       });
     }
     getAllData()
-  }, [isCLick])
+  }, [])
 
-  console.log(toDoData)
   return (
     <>
       <div className="alert">
@@ -129,7 +138,6 @@ export const App = () => {
         <section className="main-content">
           <ul className="list">
             {toDoData.map((eachToDo, i) => <Post text={eachToDo.text} 
-            time={eachToDo.createOn  }
               key={i}
             />)
             }
