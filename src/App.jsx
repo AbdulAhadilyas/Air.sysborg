@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import Danger from "./component/Alert/Danger";
+import Modal from "./component/modal/Modal"
 export const App = () => {
 
   const socket = io.connect("http://localhost:8000", { transports: ['websocket'] });
@@ -15,34 +16,21 @@ export const App = () => {
   const [isCLick, setIsCLick] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isError, setsError] = useState(false);
-
+  const [fetchData, setFetchData] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     socket.on('connection', () => {
       console.log("connected")
     });
+
   }, [])
-
- 
-
-  useEffect(() => {
-    socket.on('chat message', (msg) => {
-      console.log(msg)
-      setToDoData([...toDoData , msg])
-      console.log(toDoData)
-    });
-  }, [socket])
-
-  
-
-
-
 
   const getClass = async (val) => {
     setClassID(val.classId)
     await axios.get(`http://localhost:8000/data/getItem/${val.classId}`)
       .then(function (response) {
-        console.log(response.data)
+        // console.log(response.data)
         setData(response.data)
         if (response.data.error) {
           setToDoData([])
@@ -76,7 +64,6 @@ export const App = () => {
         "cType": classID.toString()
       })
         .then(function (response) {
-          console.log(response.data);
           socket.emit('chat message', {
             "text": val.inputText,
             "cType": classID.toString()
@@ -88,64 +75,100 @@ export const App = () => {
         .finally(function () {
         });
     }
-    
+    setFetchData(!fetchData)
     setIsCLick(!isCLick)
+
+
   }
-  useEffect( () => {
-    const getAllData = async () =>{
-    await axios.get(`http://localhost:8000/data/getItem/${classID}`)
+  useEffect(() => {
+    socket.on('chat message', (msg) => {
+      setToDoData([msg, ...toDoData])
+    });
+
+  }, [socket])
+
+  useEffect(() => {
+    const getAllData = async () => {
+      await axios.get(`http://localhost:8000/data/getItem/${classID}`)
+        .then(function (response) {
+          // console.log(response.data)
+          setData(response.data)
+          if (response.data.error) {
+            setToDoData([])
+            setsError(response.data.error)
+            setErrorState(true)
+            setTimeout(() => {
+              setErrorState(false)
+            }, 1500);
+          } else {
+            setToDoData(response.data[0].classData)
+            // console.log(response.data[0].classData)
+          }
+        })
+        .catch(function (error) {
+
+        })
+        .finally(function () {
+
+        });
+    }
+    console.log(toDoData)
+    getAllData()
+  }, [fetchData])
+
+
+  const clearAll = async () => {
+    
+    await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}`)
       .then(function (response) {
         console.log(response.data)
-        setData(response.data)
-        if (response.data.error) {
-          setToDoData([])
-          setsError(response.data.error)
-          setErrorState(true)
-          setTimeout(() => {
-            setErrorState(false)
-          }, 1500);
-        } else {
-          setToDoData(response.data[0].classData)
-        }
+        setToDoData([])
       })
       .catch(function (error) {
-       
+        console.log(error);
       })
       .finally(function () {
-
       });
-    }
-    getAllData()
-  }, [])
+  }
 
-  return (
-    <>
-      <div className="alert">
-        <div className="alert-left">
-          {(errorState) ?
-            <Danger errorTxt={isError} />
-            : null}
-        </div>
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+return (
+  <>
+  <Modal/>
+    <div className="alert">
+      <div className="alert-left">
+        {(errorState) ?
+          <Danger errorTxt={isError} />
+          : null}
       </div>
-      <header>
-        <Nav />
-      </header>
-      <main>
-        <section className="top">
-          <Input getClass={getClass}
-            getInput={getInput} />
-        </section>
-        <section className="main-content">
-          <ul className="list">
-            {toDoData.map((eachToDo, i) => <Post text={eachToDo.text} 
-              key={i}
-            />)
-            }
-          </ul>
-        </section>
-      </main>
-    </>
-  );
+    </div>
+    <header>
+      <Nav />
+    </header>
+    <main>
+      <section className="top">
+        <Input getClass={getClass}
+          getInput={getInput}
+          clearAll={clearAll} />
+      </section>
+      <section className="main-content">
+        <ul className="list">
+          {toDoData.map((eachToDo, i) => <Post text={eachToDo.text}
+            key={i}
+          />)
+          }
+        </ul>
+      </section>
+    </main>
+  </>
+);
 };
 
 export default App;
