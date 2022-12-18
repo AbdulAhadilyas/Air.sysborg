@@ -18,13 +18,16 @@ export const App = () => {
   const [isError, setsError] = useState(false);
   const [fetchData, setFetchData] = useState(false);
   const [open, setOpen] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [ifPassNotMatch, setIfPassNotMatch] = useState(false);
+  const admin = "Saylani9321"
 
-  useEffect(() => {
-    socket.on('connection', () => {
-      console.log("connected")
-    });
+  // useEffect(() => {
+  //   socket.on('connection', () => {
+  //     console.log("connected")
+  //   });
 
-  }, [])
+  // }, [])
 
   const getClass = async (val) => {
     setClassID(val.classId)
@@ -80,95 +83,120 @@ export const App = () => {
 
 
   }
-  useEffect(() => {
-    socket.on('chat message', (msg) => {
-      setToDoData([msg, ...toDoData])
-    });
+  // useEffect(() => {
+  //   socket.on('chat message', (msg) => {
+  //     setToDoData([msg, ...toDoData])
+  //   });
 
-  }, [socket])
+  // }, [socket])
 
-  useEffect(() => {
-    const getAllData = async () => {
-      await axios.get(`http://localhost:8000/data/getItem/${classID}`)
-        .then(function (response) {
-          // console.log(response.data)
-          setData(response.data)
-          if (response.data.error) {
-            setToDoData([])
-            setsError(response.data.error)
-            setErrorState(true)
-            setTimeout(() => {
-              setErrorState(false)
-            }, 1500);
-          } else {
-            setToDoData(response.data[0].classData)
-            // console.log(response.data[0].classData)
-          }
-        })
-        .catch(function (error) {
+  // useEffect(() => {
+  //   const getAllData = async () => {
+  //     await axios.get(`http://localhost:8000/data/getItem/${classID}`)
+  //       .then(function (response) {
+  //         // console.log(response.data)
+  //         setData(response.data)
+  //         if (response.data.error) {
+  //           setToDoData([])
+  //           setsError(response.data.error)
+  //           setErrorState(true)
+  //           setTimeout(() => {
+  //             setErrorState(false)
+  //           }, 1500);
+  //         } else {
+  //           setToDoData(response.data[0].classData)
+  //           // console.log(response.data[0].classData)
+  //         }
+  //       })
+  //       .catch(function (error) {
 
-        })
-        .finally(function () {
+  //       })
+  //       .finally(function () {
 
-        });
-    }
-    console.log(toDoData)
-    getAllData()
-  }, [fetchData])
+  //       });
+  //   }
+  //   console.log(toDoData)
+  //   getAllData()
+  // }, [fetchData])
 
 
-  const clearAll = async () => {
-    
-    await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}`)
-      .then(function (response) {
-        console.log(response.data)
-        setToDoData([])
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .finally(function () {
-      });
-  }
-
-  const handleClickOpen = () => {
+  const handleOpenModal = async () => {
     setOpen(true);
-  };
 
+    // await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}`)
+    //   .then(function (response) {
+    //     console.log(response.data)
+    //     setToDoData([])
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   })
+    //   .finally(function () {
+    //   });
+  }
+  const clearAll =()=>{
+    if(adminPassword === admin){
+      console.log("matched ")
+      setIfPassNotMatch(false)
+    }else{
+      console.log("not matched ")
+      setIfPassNotMatch(true)
+      setTimeout(() => {
+        setIfPassNotMatch(false)
+      }, 1200);
+    }
+    
+  }
+  
   const handleClose = () => {
     setOpen(false);
   };
+  
+  const adminPass = (val) => {
+    setAdminPassword(val)
+   };
 
-return (
-  <>
-  <Modal/>
-    <div className="alert">
-      <div className="alert-left">
-        {(errorState) ?
-          <Danger errorTxt={isError} />
-          : null}
+
+
+
+
+  return (
+    <>
+      <Modal
+        modalState={open}
+        adminPass={adminPass}
+        handleClose={handleClose}
+        handleSubmit={clearAll}
+        ifError={ifPassNotMatch}
+      />
+      <div className="alert">
+        <div className="alert-left">
+          {(errorState) ?
+            <Danger errorTxt={isError} />
+            : null}
+        </div>
       </div>
-    </div>
-    <header>
-      <Nav />
-    </header>
-    <main>
-      <section className="top">
-        <Input getClass={getClass}
-          getInput={getInput}
-          clearAll={clearAll} />
-      </section>
-      <section className="main-content">
-        <ul className="list">
-          {toDoData.map((eachToDo, i) => <Post text={eachToDo.text}
-            key={i}
-          />)
-          }
-        </ul>
-      </section>
-    </main>
-  </>
-);
+      <header>
+        <Nav />
+      </header>
+      <main>
+        <section className="top">
+          <Input getClass={getClass}
+            getInput={getInput}
+            handleOpenModal={handleOpenModal} 
+           />
+        </section>
+        <section className="main-content">
+          <ul className="list">
+            {toDoData.map((eachToDo, i) => <Post text={eachToDo.text}
+              key={i}
+            />)
+            }
+          </ul>
+        </section>
+      </main>
+    </>
+  );
 };
 
 export default App;

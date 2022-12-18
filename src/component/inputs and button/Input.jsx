@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Socket } from "socket.io-client";
 
 
-export default function Input({getClass,getInput,clearAll}) {
+export default function Input({getClass,getInput,handleOpenModal}) {
  
   const [idFound, setIdFound] = useState(false);
 
@@ -151,7 +151,7 @@ export default function Input({getClass,getInput,clearAll}) {
           </div>
           <div className="button-pad">
             <div className="btn-cleare">
-              <button className="button-36" onClick={clearAll}>
+              <button className="button-36" onClick={handleOpenModal}>
                 Clear All
               </button>
             </div>
