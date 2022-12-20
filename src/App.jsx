@@ -18,16 +18,16 @@ export const App = () => {
   const [isError, setsError] = useState(false);
   const [fetchData, setFetchData] = useState(false);
   const [open, setOpen] = useState(false);
+  const [publicIp, setPublicIp] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [ifPassNotMatch, setIfPassNotMatch] = useState(false);
   const admin = "Saylani9321"
 
-  // useEffect(() => {
-  //   socket.on('connection', () => {
-  //     console.log("connected")
-  //   });
-
-  // }, [])
+  useEffect(() => {
+    socket.on('connection', () => {
+      console.log("connected")
+    });
+  }, [])
 
   const getClass = async (val) => {
     setClassID(val.classId)
@@ -52,6 +52,20 @@ export const App = () => {
       .finally(function () {
 
       });
+      await axios.get(`http://localhost:8000/${`ip`}`)
+      .then(function (response) {
+    
+      
+       console.log( response.data.split(":"))
+      })
+      .catch(function (error) {
+
+      })
+      .finally(function () {
+
+      });
+
+
   }
 
 
@@ -67,6 +81,7 @@ export const App = () => {
         "cType": classID.toString()
       })
         .then(function (response) {
+          console.log(response.data)
           socket.emit('chat message', {
             "text": val.inputText,
             "cType": classID.toString()
@@ -77,67 +92,71 @@ export const App = () => {
         })
         .finally(function () {
         });
+
+
+       
     }
     setFetchData(!fetchData)
     setIsCLick(!isCLick)
-
-
   }
-  // useEffect(() => {
-  //   socket.on('chat message', (msg) => {
-  //     setToDoData([msg, ...toDoData])
-  //   });
+  useEffect(() => {
+    socket.on('chat message', (msg) => {
+      setToDoData([msg, ...toDoData])
+      console.log(msg)
+    });
+  }, [socket])
 
-  // }, [socket])
+  useEffect(() => {
+    const getAllData = async () => {
+      await axios.get(`http://localhost:8000/data/getItem/${classID}`)
+        .then(function (response) {
+          // console.log(response.data)
+          setData(response.data)
+          if (response.data.error) {
+            setToDoData([])
+            setsError(response.data.error)
+            setErrorState(true)
+            setTimeout(() => {
+              setErrorState(false)
+            }, 1500);
+          } else {
+            setToDoData(response.data[0].classData)
+            // console.log(response.data[0].classData)
+          }
+        })
+        .catch(function (error) {
 
-  // useEffect(() => {
-  //   const getAllData = async () => {
-  //     await axios.get(`http://localhost:8000/data/getItem/${classID}`)
-  //       .then(function (response) {
-  //         // console.log(response.data)
-  //         setData(response.data)
-  //         if (response.data.error) {
-  //           setToDoData([])
-  //           setsError(response.data.error)
-  //           setErrorState(true)
-  //           setTimeout(() => {
-  //             setErrorState(false)
-  //           }, 1500);
-  //         } else {
-  //           setToDoData(response.data[0].classData)
-  //           // console.log(response.data[0].classData)
-  //         }
-  //       })
-  //       .catch(function (error) {
+        })
+        .finally(function () {
 
-  //       })
-  //       .finally(function () {
-
-  //       });
-  //   }
-  //   console.log(toDoData)
-  //   getAllData()
-  // }, [fetchData])
+        });
+    }
+    console.log(toDoData)
+    getAllData()
+  }, [fetchData])
 
 
   const handleOpenModal = async () => {
     setOpen(true);
 
-    // await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}`)
-    //   .then(function (response) {
-    //     console.log(response.data)
-    //     setToDoData([])
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   })
-    //   .finally(function () {
-    //   });
+
   }
-  const clearAll =()=>{
+  const clearAll = async()=>{
     if(adminPassword === admin){
       console.log("matched ")
       setIfPassNotMatch(false)
+    await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}/${classID}`)
+      .then(function (response) {
+        console.log(response.data)
+        setToDoData([])
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .finally(function () {
+      });
+
+
     }else{
       console.log("not matched ")
       setIfPassNotMatch(true)
@@ -189,6 +208,7 @@ export const App = () => {
         <section className="main-content">
           <ul className="list">
             {toDoData.map((eachToDo, i) => <Post text={eachToDo.text}
+            time={eachToDo.createOn}
               key={i}
             />)
             }

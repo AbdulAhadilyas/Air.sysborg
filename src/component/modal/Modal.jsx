@@ -56,8 +56,28 @@ export default function Modal({ modalState, handleSubmit, handleClose ,adminPass
           "backgroundColor": "#181818",
           "color": "white"
         }}>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Subscribe</Button>
+          <Button onClick={handleClose}  sx={{
+          "color": "white",
+          '&:hover': {
+            backgroundColor: 'purple',
+            boxShadow: 'none',
+          },
+          '&:active': {
+            boxShadow: 'none',
+            backgroundColor: 'purple',
+          },
+        }}>Cancel</Button>
+          <Button onClick={handleSubmit} sx={{
+          "color": "white",
+          '&:hover': {
+            backgroundColor: 'purple',
+            boxShadow: 'none',
+          },
+          '&:active': {
+            boxShadow: 'none',
+            backgroundColor: 'purple',
+          },
+        }}>Subscribe</Button>
         </DialogActions>
       </Dialog>
     </div>
