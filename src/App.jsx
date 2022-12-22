@@ -10,8 +10,11 @@ import Modal from "./component/modal/Modal"
 export const App = () => {
 
   const socket = io.connect("http://localhost:8000", { transports: ['websocket'] });
+
+
   const [toDoData, setToDoData] = useState([]);
   const [data, setData] = useState([]);
+  const [soketTodo, setSoketTodo] = useState({});
   const [classID, setClassID] = useState("");
   const [isCLick, setIsCLick] = useState(false);
   const [errorState, setErrorState] = useState(false);
@@ -28,6 +31,8 @@ export const App = () => {
       console.log("connected")
     });
   }, [])
+
+
 
   const getClass = async (val) => {
     setClassID(val.classId)
@@ -52,60 +57,15 @@ export const App = () => {
       .finally(function () {
 
       });
-      await axios.get(`http://localhost:8000/${`ip`}`)
+    await axios.get(`http://localhost:8000/${`ip`}`)
       .then(function (response) {
-    
-      
-       console.log( response.data.split(":"))
+        console.log(response.data.split(":"))
       })
       .catch(function (error) {
-
       })
       .finally(function () {
-
       });
-
-
   }
-
-
-  const getInput = async (val) => {
-    if (classID === "") {
-      setErrorState(true)
-      setTimeout(() => {
-        setErrorState(false)
-      }, 1500);
-    } else {
-      await axios.post(`http://localhost:8000/data/addItem/${data[0]._id}`, {
-        "text": val.inputText,
-        "cType": classID.toString()
-      })
-        .then(function (response) {
-          console.log(response.data)
-          socket.emit('chat message', {
-            "text": val.inputText,
-            "cType": classID.toString()
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-        .finally(function () {
-        });
-
-
-       
-    }
-    setFetchData(!fetchData)
-    setIsCLick(!isCLick)
-  }
-  useEffect(() => {
-    socket.on('chat message', (msg) => {
-      setToDoData([msg, ...toDoData])
-      console.log(msg)
-    });
-  }, [socket])
-
   useEffect(() => {
     const getAllData = async () => {
       await axios.get(`http://localhost:8000/data/getItem/${classID}`)
@@ -121,7 +81,7 @@ export const App = () => {
             }, 1500);
           } else {
             setToDoData(response.data[0].classData)
-            // console.log(response.data[0].classData)
+            console.log(response.data[0].classData)
           }
         })
         .catch(function (error) {
@@ -131,49 +91,85 @@ export const App = () => {
 
         });
     }
-    console.log(toDoData)
     getAllData()
-  }, [fetchData])
+  }, [])
+
+  useEffect(() => {
+    socket.on('chat message', (msg) => {
+       setSoketTodo(msg)
+       });
+   }, [fetchData])
+ 
 
 
-  const handleOpenModal = async () => {
-    setOpen(true);
-
-
+  const getInput = async (val) => {
+    if (classID === "") {
+      setErrorState(true)
+      setTimeout(() => {
+        setErrorState(false)
+      }, 1500);
+    } else {
+      socket.emit('chat message', {
+        "text": val.inputText,
+        "cType": classID.toString()
+      });
+      await axios.post(`http://localhost:8000/data/addItem/${data[0]._id}`, {
+        "text": val.inputText,
+        "cType": classID.toString()
+      })
+        .then(function (response) {
+          setToDoData((prev)=> [...soketTodo,...toDoData])
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(function () {
+        });
+     
+    }
+    setFetchData(!fetchData)
+    setIsCLick(!isCLick)
   }
-  const clearAll = async()=>{
-    if(adminPassword === admin){
+  
+ 
+
+
+  const handleOpenModal = () => {
+    setOpen(true);
+  }
+  const clearAll = async () => {
+    if (adminPassword === admin) {
       console.log("matched ")
       setIfPassNotMatch(false)
-    await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}/${classID}`)
-      .then(function (response) {
-        console.log(response.data)
-        setToDoData([])
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .finally(function () {
-      });
+      await axios.delete(`http://localhost:8000/data/delete/${data[0]._id}/${classID}`)
+        .then(function (response) {
+          console.log(response.data)
+          setToDoData([])
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(function () {
+        });
 
 
-    }else{
+    } else {
       console.log("not matched ")
       setIfPassNotMatch(true)
       setTimeout(() => {
         setIfPassNotMatch(false)
       }, 1200);
     }
-    
+
   }
-  
+
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const adminPass = (val) => {
     setAdminPassword(val)
-   };
+  };
 
 
 
@@ -202,13 +198,13 @@ export const App = () => {
         <section className="top">
           <Input getClass={getClass}
             getInput={getInput}
-            handleOpenModal={handleOpenModal} 
-           />
+            handleOpenModal={handleOpenModal}
+          />
         </section>
         <section className="main-content">
           <ul className="list">
             {toDoData.map((eachToDo, i) => <Post text={eachToDo.text}
-            time={eachToDo.createOn}
+              time={eachToDo.createOn}
               key={i}
             />)
             }
