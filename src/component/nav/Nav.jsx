@@ -1,34 +1,38 @@
 import React from "react";
 import "./Nav.css";
 import ToglleSwitch from "../Switch/ToglleSwitch";
-import { useEffect ,useState } from "react"
+import { useEffect, useState } from "react"
 
 
 
 
 export default function Nav() {
   const [theme, setTheme] = useState(true)
+  const [currentTheme, setCurrentTheme] = useState("")
+  useEffect(() => {
+    setCurrentTheme(localStorage.getItem("theme"));
+  }, [])
+
   const changeTheme = () => {
-    let targetTheme = "light";
-    const currentTheme = document.documentElement.getAttribute("data-theme");
     if (currentTheme === "light") {
-      targetTheme = "dark";
+      setCurrentTheme("dark")
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      setCurrentTheme("light")
+      document.documentElement.setAttribute("data-theme", "light");
     }
     setTheme(!theme)
-    document.documentElement.setAttribute("data-theme", targetTheme);
-    localStorage.setItem("theme", targetTheme); 
   }
 
-  const getTheme = () => {
-    let storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      document.documentElement.setAttribute("data-theme", storedTheme);
-    }
-
-  }
-  useEffect(() => {
-    getTheme()
-  }, [])
+  // const getTheme = () => {
+  //   let storedTheme = localStorage.getItem("theme");
+  //   if (storedTheme) {
+  //     document.documentElement.setAttribute("data-theme", storedTheme);
+  //   }
+  // }
+  // useEffect(() => {
+  //   getTheme()
+  // }, [])
 
 
   return (
@@ -38,7 +42,7 @@ export default function Nav() {
           Shared clipboard over the Air - by <span>sysBorg</span>
         </h1>
         <img src="https://sysborg.com/images/sysborg-logo.jpg" alt="" />
-        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme}  mytheme={theme.toString()} />
+        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} mytheme={theme.toString()} />
       </div>
     </nav>
   );
