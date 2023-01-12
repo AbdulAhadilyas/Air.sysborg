@@ -5,13 +5,8 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Danger from "../Alert/Danger";
-import { useState } from "react";
-import { Socket } from "socket.io-client";
 
-
-export default function Input({getClass,getInput,handleOpenModal}) {
- 
-  const [idFound, setIdFound] = useState(false);
+export default function Input({ getClass, getInput, handleOpenModal, uploadFilehandleOpen }) {
 
   const classIdSchema = Yup.object().shape({
     classId: Yup.string()
@@ -130,7 +125,7 @@ export default function Input({getClass,getInput,handleOpenModal}) {
           </div>
           <div className="button-pad">
             <div className="image-upload">
-              <label htmlFor="file-input">
+              <label htmlFor="file-input" onClick={uploadFilehandleOpen}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -146,7 +141,9 @@ export default function Input({getClass,getInput,handleOpenModal}) {
                   />
                 </svg>
               </label>
-              <input id="file-input" type="file" />
+              <input id="button"
+              
+              />
             </div>
           </div>
           <div className="button-pad">

@@ -14,25 +14,20 @@ export default function Nav() {
     if (currentTheme === "light") {
       targetTheme = "dark";
     }
-    console.log(theme)
     setTheme(!theme)
     document.documentElement.setAttribute("data-theme", targetTheme);
-    localStorage.setItem("theme", targetTheme);
-    
-  };
-  
-
+    localStorage.setItem("theme", targetTheme); 
+  }
 
   const getTheme = () => {
     let storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
       document.documentElement.setAttribute("data-theme", storedTheme);
     }
-    // console.log(storedTheme)
+
   }
   useEffect(() => {
     getTheme()
-
   }, [])
 
 
@@ -42,7 +37,8 @@ export default function Nav() {
         <h1>
           Shared clipboard over the Air - by <span>sysBorg</span>
         </h1>
-        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} gettheme={theme.toString()} />
+        <img src="https://sysborg.com/images/sysborg-logo.jpg" alt="" />
+        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme}  mytheme={theme.toString()} />
       </div>
     </nav>
   );

@@ -18,3 +18,20 @@ nav .heading > h1 > span {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
 }
+nav .heading img{
+width: 40px;
+display: none;
+}
+
+
+
+@media screen and (max-width: 606px) {
+  nav .heading h1 {
+    display: none;
+  }
+  nav .heading img{
+    width: 40px;
+    display: inline;
+    }
+ 
+}

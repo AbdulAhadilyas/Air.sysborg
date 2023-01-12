@@ -44,6 +44,22 @@
     color: #ff8686;
     text-align: center;
   }
+.text a svg {
+  width: 50px;
+  filter: var(--iconFilter);
+}
+.text a:link {
+  color: rgb(0, 132, 255);
+}
+a:visited {
+  color: green;
+}
+
+.text{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
   @media screen and (max-width: 550px) {
     .list > li {
