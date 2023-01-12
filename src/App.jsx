@@ -8,11 +8,13 @@ import io from "socket.io-client";
 import Danger from "./component/Alert/Danger";
 import Modal from "./component/modal/Modal";
 import FileUpload from "./component/modal/fileUplodModal";
+import { useRef } from "react";
+
 
 export const App = () => {
-  const socket = io.connect("http://localhost:8000", {
-    transports: ["websocket"],
-  });
+  const socket = useRef();
+  const msg = useRef(null);
+
   const baseUrl = process.env.BaseUrl || "http://localhost:8000/api/v1"
   const [toDoData, setToDoData] = useState([]);
   const [data, setData] = useState([]);
@@ -33,13 +35,24 @@ export const App = () => {
   const [progressPer, setprogressPer] = useState("")
 
   const admin = "Saylani9321";
+  // const socket = io.connect("http://localhost:8000", {
+  //   transports: ["websocket"],
+  // });
 
   useEffect(() => {
-    socket.on("connection", () => {
-      console.log("connected");
+    socket.current = io("http://localhost:8000", {
+      transports: ["websocket"],
     });
+    socket.current.on("connnection", () => {
+      console.log("connected to server");
+    });
+     localStorage.setItem("theme", "light");
     // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    // 👇️ scroll to bottom every time messages change
+    msg.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [socket]);
 
   const getClass = async (val) => {
     setClassID(val.classId);
@@ -47,7 +60,6 @@ export const App = () => {
       .get(`${baseUrl}/getItem/${val.classId}`)
       .then(function (response) {
         setData(response.data);
-        console.log("response.data:", response.data);
         if (response.data.error) {
           setToDoData([]);
           setsError(response.data.error);
@@ -64,20 +76,21 @@ export const App = () => {
       })
       .finally(function () { });
     await axios
-      .get(`http://localhost:8000/${`ip`}`)
+      .get(`${baseUrl}/${`ip`}`)
       .then(function (response) {
         setPublicIp(userIp(response.data));
+
       })
       .catch(function (error) { })
       .finally(function () { });
   };
+
   useEffect(() => {
     const getAllData = async () => {
       if (classID === "") {
         await axios
           .get(`${baseUrl}/getItem/${classID}`)
           .then(function (response) {
-            console.log(response.data);
             setData(response.data);
             if (response.data.error) {
               setToDoData([]);
@@ -88,13 +101,11 @@ export const App = () => {
               }, 1500);
             } else {
               setToDoData(response.data[0].classData);
-              console.log(response.data[0].classData);
             }
           })
           .catch(function (error) { })
           .finally(function () { });
       } else {
-        console.log("no class sec");
       }
     };
     getAllData();
@@ -111,20 +122,20 @@ export const App = () => {
         setErrorState(false);
       }, 1500);
     } else {
-      await socket.emit("chat message", {
-        text: val.inputText,
-        cType: classID.toString(),
-        ip:publicIp
-      });
       await axios
         .post(`${baseUrl}/addItem/${data[0]._id}`, {
           text: val.inputText,
           cType: classID.toString(),
-          ip:publicIp
+          ip: publicIp
         })
-        .then(function (response) { })
+        .then(
+          socket.current.emit("chat message", {
+            text: val.inputText,
+            cType: classID.toString(),
+            ip: publicIp
+          })
+        )
         .catch(function (error) {
-          console.log(error);
         })
         .finally(function () { });
     }
@@ -134,21 +145,16 @@ export const App = () => {
 
   const clearAll = async () => {
     if (adminPassword === admin) {
-      console.log("matched ");
       setIfPassNotMatch(false);
-
       await axios
         .delete(`${baseUrl}/delete/${data[0]._id}/${classID}`)
         .then(function (response) {
-          console.log(response.data);
           setToDoData([]);
         })
         .catch(function (error) {
-          console.log(error);
         })
         .finally(function () { });
     } else {
-      console.log("not matched ");
       setIfPassNotMatch(true);
       setTimeout(() => {
         setIfPassNotMatch(false);
@@ -166,28 +172,27 @@ export const App = () => {
     setFileLoader(true)
     let formData = new FormData();
     formData.append("todoFile", uploadFile);
-    // console.log(uploadFile.type)
     const options = {
       onUploadProgress: (progressEvent) => {
         const { loaded, total } = progressEvent;
         let percent = Math.floor((loaded * 100) / total)
-        console.log(`${loaded}kb of ${total}kb | ${percent}%`);
         setprogressPer(percent)
-        console.log(progressPer)
+        if (percent >= 100) {
+          setprogressPer("")
+        }
       }
     }
     try {
       if (classID === "") {
-        console.log("no class selected")
         setFileLoader(false)
       } else {
         const response = await axios.post(`${baseUrl}/upload`, formData, options)
         setUrl(response.data);
-        socket.emit("chat message", {
+        socket.current.emit("chat message", {
           url: response.data,
           fileType: getFileType(uploadFile.type),
           cType: classID.toString(),
-          ip:publicIp
+          ip: publicIp
         });
         const imageTodo = await axios.post(
           `${baseUrl}/addItem/${data[0]._id}`,
@@ -195,16 +200,14 @@ export const App = () => {
             url: response.data,
             cType: classID.toString(),
             fileType: getFileType(uploadFile.type),
-            ip:publicIp
+            ip: publicIp
           }
         );
-        console.log("imageTodo", imageTodo);
         setFileLoader(false)
       }
     } catch (error) {
       console.log("axios ", error);
     }
-    console.log(getFileType(uploadFile.type));
   };
 
   const uploadFilehandleClose = () => {
@@ -220,9 +223,8 @@ export const App = () => {
 
   useEffect(() => {
     const getSocketTodo = () => {
-      socket.on("chat message", (msg) => {
+      socket.current.on("chat message", (msg) => {
         setSoketTodo(msg);
-        console.log(msg);
       });
     };
     if (soketTodo) {
@@ -237,10 +239,8 @@ export const App = () => {
   const getFileType = (val) => {
     let type = "";
     type = val.split("/");
-    console.log(type[1]);
     return type[1];
   };
-  console.log(publicIp)
   return (
     <>
       <Modal
@@ -249,9 +249,9 @@ export const App = () => {
         handleClose={handleClose}
         handleSubmit={clearAll}
         ifError={ifPassNotMatch}
-      
+
       />
-    
+
       <FileUpload
         modalState={upLoadModal}
         handleClose={uploadFilehandleClose}
@@ -286,6 +286,7 @@ export const App = () => {
                 key={i}
                 fileType={eachToDo?.fileType}
                 fileUrl={eachToDo?.url}
+                ipAdders={eachToDo?.ip}
               />
             ))}
           </ul>
