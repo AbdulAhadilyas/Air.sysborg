@@ -22,18 +22,19 @@ export default function Modal({
   const buttonSx = {
     color: theme === "dark" ? "#D5D5D5" : "black",
     "&:hover": {
+      color: "#D5D5D5",
       background:
-        theme === "dark"
-          ? "linear-gradient( 68.1deg,  rgba(152,25,175,1) -0.1%, rgba(149,22,182,1) 8.2%, rgba(92,21,173,1) 49.1%, rgba(88,22,168,1) 57.9%, rgba(74,17,177,1) 85.2%, rgba(65,17,154,1) 100.1% )"
-          : "linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%)",
+      theme === "dark"
+      ? "#6C00FF"
+      : "#1E2022",
       boxShadow: "none",
     },
     "&:active": {
       boxShadow: "none",
       background:
-        theme === "dark"
-          ? "linear-gradient( 68.1deg,  rgba(152,25,175,1) -0.1%, rgba(149,22,182,1) 8.2%, rgba(92,21,173,1) 49.1%, rgba(88,22,168,1) 57.9%, rgba(74,17,177,1) 85.2%, rgba(65,17,154,1) 100.1% )"
-          : "linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%)",
+      theme === "dark"
+      ? "#6C00FF"
+      : "#1E2022",
     },
   };
 
@@ -81,18 +82,19 @@ export default function Modal({
             sx={{
               color: theme === "dark" ? "#D5D5D5" : "black",
               "&:hover": {
+                color: "#D5D5D5",
                 background:
-                  theme === "dark"
-                    ? "linear-gradient( 68.1deg,  rgba(152,25,175,1) -0.1%, rgba(149,22,182,1) 8.2%, rgba(92,21,173,1) 49.1%, rgba(88,22,168,1) 57.9%, rgba(74,17,177,1) 85.2%, rgba(65,17,154,1) 100.1% )"
-                    : "linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%)",
+                theme === "dark"
+                ? "#6C00FF"
+                : "#1E2022",
                 boxShadow: "none",
               },
               "&:active": {
                 boxShadow: "none",
                 background:
                   theme === "dark"
-                    ? "linear-gradient( 68.1deg,  rgba(152,25,175,1) -0.1%, rgba(149,22,182,1) 8.2%, rgba(92,21,173,1) 49.1%, rgba(88,22,168,1) 57.9%, rgba(74,17,177,1) 85.2%, rgba(65,17,154,1) 100.1% )"
-                    : "linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%)",
+                    ? "#6C00FF"
+                    : "#1E2022",
               },
             }}
           >
