@@ -19,12 +19,12 @@ const ToglleSwitch = styled(Switch)(({ mytheme }) => ({
       },
       '& + .MuiSwitch-track': {
         opacity: 1,
-        backgroundColor:  mytheme ==="true"  ? '#8796A5' : '#aab4be',
+        backgroundColor:  mytheme ==="light"  ? '#8796A5' : '#aab4be',
       },
     },
   },
   '& .MuiSwitch-thumb': {
-    backgroundColor:   mytheme ==="true"  ? '#6C00FF' : '#1E2022',
+    backgroundColor:    mytheme ==="light"  ? '#6C00FF' : '#1E2022',
     width: 25,
     height: 25,
     '&:before': {
@@ -43,7 +43,7 @@ const ToglleSwitch = styled(Switch)(({ mytheme }) => ({
   },
   '& .MuiSwitch-track': {
     opacity: 1,
-    backgroundColor:   mytheme ==="true"  ? '#8796A5' : '#aab4be',
+    backgroundColor:   mytheme ==="light"  ? '#8796A5' : '#aab4be',
     borderRadius: 20 / 2,
   },
 }));

@@ -5,6 +5,10 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Danger from "../Alert/Danger";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import showAlert from "../helper/showAlert";
+
 
 export default function Input({ getClass, getInput, handleOpenModal, uploadFilehandleOpen }) {
 
@@ -20,31 +24,11 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
       classId: "",
     },
     validationSchema: classIdSchema,
+    validateOnChange:false,
     onSubmit: async (values) => {
       console.log(values);
       getClass(values)
 
-      // setStdClassId(values)
-      // await axios.get(`http://localhost:8000/data/getItem/${values.classId}`)
-      //   .then(function (response) {
-      //     console.log(response.data);
-      //     if (response.data === "No Class Found") {
-      //       setIdFound(true)
-      //       setClassData("No Class Found")
-      //     } else {
-      //       console.log("no error")
-      //       setClassData(response.data)
-      //     }
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   })
-      //   .finally(function () {
-
-      //   });
-      // setTimeout(() => {
-      //   setIdFound(false)
-      // }, 2000);
     },
   }
   );
@@ -56,15 +40,29 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
   const classInput = useFormik({
     initialValues: {
       inputText: "",
-
     },
     validationSchema: inputSchema,
-    // validateOnChange:false,
+    validateOnChange:false,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
       getInput(values)
     },
   });
+  useEffect(() => {
+    if (Boolean(classId.touched.classId)) {
+      showAlert({
+        msg: classId.errors.classId ,
+        type:"error"
+      })
+    }
+    if(Boolean(classInput.touched.inputText)){
+      showAlert({
+        msg: classInput.errors.inputText,
+        type:"error"
+      })
+    }
+  }, [classId.errors.classId,classInput.errors.inputText])
+
 
 
 
@@ -77,15 +75,16 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
           {/* {idFound ? (
             <Danger errorTxt={classData} />
           ) : null} */}
-          {Boolean(classId.errors.classId) ? (
+          {/* {Boolean(classId.errors.classId) ? (
             <Danger errorTxt={classId.errors.classId} />
           ) : null}
           {
             Boolean(classInput.errors.inputText) ? (
               <Danger errorTxt={classInput.errors.inputText} />
-            ) : null}
+            ) : null} */}
         </div>
       </div>
+      <ToastContainer />
       <div className="input-box">
         <div className="input-class">
           <form onSubmit={classId.handleSubmit}>
@@ -142,7 +141,7 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
                 </svg>
               </label>
               <input id="button"
-              
+
               />
             </div>
           </div>

@@ -7,21 +7,28 @@ import { useEffect, useState } from "react"
 
 
 export default function Nav() {
-  const [theme, setTheme] = useState(true)
+  const [theme, setTheme] = useState("")
   const [currentTheme, setCurrentTheme] = useState("")
   useEffect(() => {
     setCurrentTheme(localStorage.getItem("theme"));
+    const theme = () =>{
+      let myTheame = localStorage.getItem("theme");
+      document.documentElement.setAttribute("data-theme", myTheame);
+     }
+     theme()
+     // eslint-disable-next-line
   }, [])
 
   const changeTheme = () => {
     if (currentTheme === "light") {
       setCurrentTheme("dark")
+      localStorage.setItem("theme","dark")
       document.documentElement.setAttribute("data-theme", "dark");
     } else {
+      localStorage.setItem("theme","light")
       setCurrentTheme("light")
       document.documentElement.setAttribute("data-theme", "light");
     }
-    setTheme(!theme)
   }
 
   // const getTheme = () => {
@@ -42,7 +49,7 @@ export default function Nav() {
           Shared clipboard over the Air - by <span>sysBorg</span>
         </h1>
         <img src="https://sysborg.com/images/sysborg-logo.jpg" alt="" />
-        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} mytheme={theme.toString()} />
+        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} mytheme={currentTheme} />
       </div>
     </nav>
   );

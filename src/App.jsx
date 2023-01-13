@@ -13,7 +13,6 @@ import { useRef } from "react";
 
 export const App = () => {
   const socket = useRef();
-  const msg = useRef(null);
 
   const baseUrl = process.env.BaseUrl || "http://localhost:8000/api/v1"
   const [toDoData, setToDoData] = useState([]);
@@ -46,13 +45,12 @@ export const App = () => {
     socket.current.on("connnection", () => {
       console.log("connected to server");
     });
-     localStorage.setItem("theme", "light");
     // eslint-disable-next-line
+    if(!localStorage.getItem("theme")){
+      localStorage.setItem("theme","light")
+    }
   }, []);
-  useEffect(() => {
-    // 👇️ scroll to bottom every time messages change
-    msg.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [socket]);
+
 
   const getClass = async (val) => {
     setClassID(val.classId);
@@ -260,11 +258,11 @@ export const App = () => {
         isLoading={fileLoader}
         progress={Number(progressPer)}
       />
-      <div className="alert">
+      {/* <div className="alert">
         <div className="alert-left">
           {errorState ? <Danger errorTxt={isError} /> : null}
         </div>
-      </div>
+      </div> */}
       <header>
         <Nav />
       </header>
