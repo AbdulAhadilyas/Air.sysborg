@@ -108,9 +108,11 @@ input {
   justify-content: center;
   align-items: center;
   border-radius: 30px;
+  
 }
 .image-upload label > svg {
   width: 40px;
+  
 }
 .image-upload:hover {
   box-shadow: var(--hover) 0 1px 30px;
@@ -122,6 +124,7 @@ input {
   justify-content: center;
   align-items: center;
   border-radius: 30px;
+  
 }
 .button-36 {
   background: var(--bg-colour);

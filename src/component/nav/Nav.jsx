@@ -2,6 +2,9 @@ import React from "react";
 import "./Nav.css";
 import ToglleSwitch from "../Switch/ToglleSwitch";
 import { useEffect, useState } from "react"
+import { GlobalContext } from '../../Context/context';
+import { useContext } from "react";
+
 
 
 
@@ -9,6 +12,8 @@ import { useEffect, useState } from "react"
 export default function Nav() {
   const [theme, setTheme] = useState("")
   const [currentTheme, setCurrentTheme] = useState("")
+  let { state, dispatch } = useContext(GlobalContext);
+
   useEffect(() => {
     setCurrentTheme(localStorage.getItem("theme"));
     const theme = () =>{
@@ -24,11 +29,21 @@ export default function Nav() {
       setCurrentTheme("dark")
       localStorage.setItem("theme","dark")
       document.documentElement.setAttribute("data-theme", "dark");
+      dispatch({
+        type: "CHANGE_THEME",
+        payload:"dark"
+      })
     } else {
       localStorage.setItem("theme","light")
       setCurrentTheme("light")
       document.documentElement.setAttribute("data-theme", "light");
+      dispatch({
+        type: "CHANGE_THEME",
+        payload:"light"
+      })
     }
+   
+   console.log(state.Theme)
   }
 
   // const getTheme = () => {
@@ -41,7 +56,6 @@ export default function Nav() {
   //   getTheme()
   // }, [])
 
-
   return (
     <nav>
       <div className="heading">
@@ -49,7 +63,7 @@ export default function Nav() {
           Shared clipboard over the Air - by <span>sysBorg</span>
         </h1>
         <img src="https://sysborg.com/images/sysborg-logo.jpg" alt="" />
-        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} mytheme={currentTheme} />
+        <ToglleSwitch sx={{ m: 2 }} onChange={changeTheme} mytheme={state.Theme} />
       </div>
     </nav>
   );

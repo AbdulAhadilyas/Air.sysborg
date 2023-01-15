@@ -7,8 +7,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import "./fileUpload.css";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import MyProgress from "../../component/progressCircle/MyProgress";
 import { Progress } from 'antd';
+import { GlobalContext } from '../../Context/context';
+import { useContext } from "react";
+
+
 export default function Modal({
   modalState,
   handleSubmit,
@@ -17,14 +20,15 @@ export default function Modal({
   isLoading,
   progress
 }) {
-  let theme = localStorage.getItem("theme");
+  let { state } = useContext(GlobalContext);
+
 
   const buttonSx = {
-    color: theme === "dark" ? "#D5D5D5" : "black",
+    color: state.Theme === "dark" ? "#D5D5D5" : "black",
     "&:hover": {
       color: "#D5D5D5",
       background:
-      theme === "dark"
+      state.Theme === "dark"
       ? "#6C00FF"
       : "#1E2022",
       boxShadow: "none",
@@ -32,7 +36,7 @@ export default function Modal({
     "&:active": {
       boxShadow: "none",
       background:
-      theme === "dark"
+       state.Theme === "dark"
       ? "#6C00FF"
       : "#1E2022",
     },
@@ -45,16 +49,16 @@ export default function Modal({
         <>
           <DialogTitle
             sx={{
-              backgroundColor: theme === "dark" ? "#181818" : "#D5D5D5",
-              color: theme === "dark" ? "#D5D5D5" : "black",
+              backgroundColor:  state.Theme === "dark" ? "#181818" : "#D5D5D5",
+              color:  state.Theme === "dark" ? "#D5D5D5" : "black",
             }}
           >
             Upload File
           </DialogTitle>
           <DialogContent
             sx={{
-              backgroundColor: theme === "dark" ? "#181818" : "#D5D5D5",
-              color: theme === "dark" ? "#D5D5D5" : "black",
+              backgroundColor:  state.Theme === "dark" ? "#181818" : "#D5D5D5",
+              color:  state.Theme === "dark" ? "#D5D5D5" : "black",
             }}
           >
             {Boolean(progress) ? <div className="progress">
@@ -74,17 +78,17 @@ export default function Modal({
         </>
         <DialogActions
           sx={{
-            backgroundColor: theme === "dark" ? "#181818" : "#D5D5D5",
+            backgroundColor:  state.Theme === "dark" ? "#181818" : "#D5D5D5",
           }}
         >
           <Button
             onClick={handleClose}
             sx={{
-              color: theme === "dark" ? "#D5D5D5" : "black",
+              color:  state.Theme === "dark" ? "#D5D5D5" : "black",
               "&:hover": {
                 color: "#D5D5D5",
                 background:
-                theme === "dark"
+                 state.Theme === "dark"
                 ? "#6C00FF"
                 : "#1E2022",
                 boxShadow: "none",
@@ -92,7 +96,7 @@ export default function Modal({
               "&:active": {
                 boxShadow: "none",
                 background:
-                  theme === "dark"
+                   state.Theme === "dark"
                     ? "#6C00FF"
                     : "#1E2022",
               },
@@ -107,7 +111,7 @@ export default function Modal({
                 <CircularProgress
                   size={24}
                   sx={{
-                    color: theme === "dark" ? "#D5D5D5" : "black",
+                    color:  state.Theme === "dark" ? "#D5D5D5" : "black",
                     position: "absolute",
                     top: "50%",
                     left: "50%",

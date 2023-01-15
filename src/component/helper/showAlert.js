@@ -1,6 +1,7 @@
 
 import { toast } from "react-toastify";
 
+
 const showAlert = (val) => {
   localStorage.getItem("theme")
       toast(val.msg, {
@@ -12,7 +13,7 @@ const showAlert = (val) => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: localStorage.getItem("theme"),
+        theme: "colored",
       });
 };
 export default showAlert

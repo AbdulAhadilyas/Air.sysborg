@@ -4,19 +4,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Danger from "../Alert/Danger";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import showAlert from "../helper/showAlert";
 
-
-export default function Input({ getClass, getInput, handleOpenModal, uploadFilehandleOpen }) {
-
+export default function Input({
+  getClass,
+  getInput,
+  handleOpenModal,
+  uploadFilehandleOpen,
+  classFound,
+}) {
   const classIdSchema = Yup.object().shape({
     classId: Yup.string()
       .min(2, "Too Short!")
       .max(10, "Too Long!")
-      .required("Class id is requird"),
+      .required("Class id is required"),
   });
 
   const classId = useFormik({
@@ -24,17 +25,15 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
       classId: "",
     },
     validationSchema: classIdSchema,
-    validateOnChange:false,
-    onSubmit: async (values) => {
+    validateOnChange: false,
+    onSubmit: (values) => {
       console.log(values);
-      getClass(values)
-
+      getClass(values);
     },
-  }
-  );
+  });
   const inputSchema = Yup.object().shape({
     inputText: Yup.string()
-      .min(5, "Too Short!")
+      .min(3, "Too Short!")
       .required("Please enter something "),
   });
   const classInput = useFormik({
@@ -42,49 +41,31 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
       inputText: "",
     },
     validationSchema: inputSchema,
-    validateOnChange:false,
+    validateOnChange: false,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
-      getInput(values)
+      getInput(values);
     },
   });
   useEffect(() => {
     if (Boolean(classId.touched.classId)) {
       showAlert({
-        msg: classId.errors.classId ,
-        type:"error"
-      })
+        msg: classId.errors.classId,
+        type: "error",
+      });
     }
-    if(Boolean(classInput.touched.inputText)){
+
+    if (Boolean(classInput.errors.inputText)) {
       showAlert({
         msg: classInput.errors.inputText,
-        type:"error"
-      })
+        type: "error",
+      });
     }
-  }, [classId.errors.classId,classInput.errors.inputText])
-
-
-
-
-
+    // eslint-disable-next-line
+  }, [classId.errors.classId, classInput.errors.inputText]);
 
   return (
     <>
-      <div className="alert">
-        <div className="alert-left">
-          {/* {idFound ? (
-            <Danger errorTxt={classData} />
-          ) : null} */}
-          {/* {Boolean(classId.errors.classId) ? (
-            <Danger errorTxt={classId.errors.classId} />
-          ) : null}
-          {
-            Boolean(classInput.errors.inputText) ? (
-              <Danger errorTxt={classInput.errors.inputText} />
-            ) : null} */}
-        </div>
-      </div>
-      <ToastContainer />
       <div className="input-box">
         <div className="input-class">
           <form onSubmit={classId.handleSubmit}>
@@ -93,8 +74,14 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
                 type="text"
                 placeholder="Class ID"
                 onChange={classId.handleChange}
+                onBlur={classId.handleBlur}
                 name="classId"
-                className={Boolean(classId.errors.classId) ? "classValid" : ""}
+                className={
+                  Boolean(classId.touched.classId) &&
+                  Boolean(classId.errors.classId)
+                    ? "classValid"
+                    : ""
+                }
               />
               <button type="submit">
                 <FontAwesomeIcon icon={faCheck} />
@@ -109,22 +96,59 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
               placeholder="Add Item "
               onChange={classInput.handleChange}
               name="inputText"
-              className={Boolean(classInput.errors.inputText) ? "isValid" : ""}
-              onBlur={classInput.handleBlur}
+              className={
+                Boolean(classInput.touched.inputText) &&
+                Boolean(classInput.errors.inputText)
+                  ? "isValid"
+                  : ""
+              }
+              disabled={classFound}
+              style={
+                !classId.isSubmitting
+                  ? {
+                      opacity: "0.5",
+                    }
+                  : null
+              }
             />
           </div>
         </form>
         <div className="button-box">
           <div className="button-pad">
             <div className="btn-add">
-              <button className="button-36" type="submit" form="form1" value="Submit">
+              <button
+                className="button-36"
+                type="submit"
+                form="form1"
+                value="Submit"
+                disabled={classFound}
+                style={
+                  classFound
+                    ? {
+                        opacity: "0.5",
+                      }
+                    : null
+                }
+              >
                 Submit
               </button>
             </div>
           </div>
           <div className="button-pad">
-            <div className="image-upload">
-              <label htmlFor="file-input" onClick={uploadFilehandleOpen}>
+            <div
+              className="image-upload"
+              style={
+                classFound
+                  ? {
+                      opacity: "0.5",
+                    }
+                  : null
+              }
+            >
+              <label
+                htmlFor="file-input"
+                onClick={!classFound ? uploadFilehandleOpen : undefined}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -140,14 +164,22 @@ export default function Input({ getClass, getInput, handleOpenModal, uploadFileh
                   />
                 </svg>
               </label>
-              <input id="button"
-
-              />
+              <input id="button" />
             </div>
           </div>
           <div className="button-pad">
             <div className="btn-cleare">
-              <button className="button-36" onClick={handleOpenModal}>
+              <button
+                className="button-36"
+                onClick={!classFound ? handleOpenModal : undefined}
+                style={
+                  classFound
+                    ? {
+                        opacity: "0.5",
+                      }
+                    : null
+                }
+              >
                 Clear All
               </button>
             </div>
