@@ -37,8 +37,10 @@ export const App = () => {
 
   const admin = process.env.REACT_APP_ADMIN_PSS;
 
+  const SOCKETURL = process.env.REACT_APP_SOCKET_URl
+
   useEffect(() => {
-    socket.current = io("http://localhost:8000", {
+    socket.current = io(SOCKETURL, {
       transports: ["websocket"],
     });
     socket.current.on("connnection", () => {
@@ -57,7 +59,7 @@ export const App = () => {
     try {
       let response = await axios.get(`${state.BASEURl}/getItem/${val.classId}`);
       setData(response.data);
-  
+
       if (response.data.error) {
         setToDoData([]);
         showAlert({
@@ -81,7 +83,7 @@ export const App = () => {
       .get(`${state.BASEURl}/getItem/${classID}`)
       .then(function (response) {
         setData(response.data);
-   
+
         if (response.data.error) {
           setToDoData([]);
           showAlert({
@@ -98,7 +100,7 @@ export const App = () => {
 
   useEffect(() => {
     getAllData();
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
   }, []);
 
   const getInput = async (val) => {
@@ -206,7 +208,7 @@ export const App = () => {
         });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -222,7 +224,7 @@ export const App = () => {
       }
     }
     getSocketTodo();
-// eslint-disable-next-line 
+    // eslint-disable-next-line
   }, [socketTodo]);
 
   const getFileType = (val) => {
