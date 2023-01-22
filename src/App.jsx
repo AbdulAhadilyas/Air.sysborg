@@ -5,15 +5,18 @@ import Post from "./component/post/Post";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
-import Modal from "./component/modal/Modal";
+import ClearALlModal from "./component/modal/Modal";
+import DeleteOneModal from "./component/modal/Modal";
 import FileUpload from "./component/modal/fileUplodModal";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import showAlert from "./component/helper/showAlert";
 import "react-toastify/dist/ReactToastify.css";
+import { useContext } from "react";
+import { GlobalContext } from "./Context/context";
 export const App = () => {
   const socket = useRef();
-  const baseUrl = process.env.BaseUrl || "http://localhost:8000/api/v1";
+  const { state } = useContext(GlobalContext);
   const [toDoData, setToDoData] = useState([]);
   const [data, setData] = useState([]);
   const [socketTodo, setSocketTodo] = useState(null);
@@ -29,6 +32,8 @@ export const App = () => {
   const [fileLoader, setFileLoader] = useState(false);
   const [progressPer, setProgressPer] = useState("");
   const [isClassFound, setIsClassFound] = useState(true);
+  const [deleteOneModal, setDeleteOneModal] = useState(false);
+  const [deleteOneId, setDeleteOneId] = useState("");
 
   const admin = "Saylani9321";
 
@@ -50,7 +55,7 @@ export const App = () => {
   const getClass = async (val) => {
     setClassID(val.classId);
     try {
-      let response = await axios.get(`${baseUrl}/getItem/${val.classId}`);
+      let response = await axios.get(`${state.BASEURl}/getItem/${val.classId}`);
       setData(response.data);
       console.log(response.data);
       if (response.data.error) {
@@ -64,40 +69,41 @@ export const App = () => {
         setToDoData(response.data[0].classData);
         setIsClassFound(false);
       }
-      let ipResponse = await axios.get(`${baseUrl}/${`ip`}`);
+      let ipResponse = await axios.get(`${state.BASEURl}/${`ip`}`);
       setPublicIp(userIp(ipResponse.data));
     } catch (error) {
       console.log(error);
     }
   };
 
+  const getAllData = async () => {
+    await axios
+      .get(`${state.BASEURl}/getItem/${classID}`)
+      .then(function (response) {
+        setData(response.data);
+        console.log("response", response.data);
+        if (response.data.error) {
+          setToDoData([]);
+          showAlert({
+            msg: response.data.error,
+            type: "error",
+          });
+        } else {
+          setToDoData(response.data[0].classData);
+        }
+      })
+      .catch(function (error) {})
+      .finally(function () {});
+  };
+
   useEffect(() => {
-    const getAllData = async () => {
-      await axios
-        .get(`${baseUrl}/getItem/${classID}`)
-        .then(function (response) {
-          setData(response.data);
-          console.log("response", response.data);
-          if (response.data.error) {
-            setToDoData([]);
-            showAlert({
-              msg: response.data.error,
-              type: "error",
-            });
-          } else {
-            setToDoData(response.data[0].classData);
-          }
-        })
-        .catch(function (error) {})
-        .finally(function () {});
-    };
     getAllData();
-  }, [socketTodo]);
-  console.log("toDoData", toDoData);
+    // eslint-disable-next-line 
+  }, []);
 
   const getInput = async (val) => {
     try {
-      await axios.post(`${baseUrl}/addItem/${data[0]._id}`, {
+      await axios.post(`${state.BASEURl}/addItem/${data[0]._id}`, {
         text: val.inputText,
         cType: classID.toString(),
         ip: publicIp,
@@ -119,9 +125,13 @@ export const App = () => {
     try {
       if (adminPassword === admin) {
         setIfPassNotMatch(false);
-        await axios.delete(`${baseUrl}/delete/${data[0]._id}/${classID}`);
+        await axios.delete(`${state.BASEURl}/delete/${data[0]._id}/${classID}`);
         setToDoData([]);
         setModalIsOpen(false);
+        showAlert({
+          msg: "Clear Successfully ",
+          type: "success",
+        });
       } else {
         showAlert({
           msg: "Password dose not match",
@@ -130,8 +140,6 @@ export const App = () => {
       }
     } catch (error) {}
   };
- 
- 
 
   const postFile = async () => {
     setFileLoader(true);
@@ -152,7 +160,7 @@ export const App = () => {
         setFileLoader(false);
       } else {
         const response = await axios.post(
-          `${baseUrl}/upload`,
+          `${state.BASEURl}/upload`,
           formData,
           options
         );
@@ -162,11 +170,15 @@ export const App = () => {
           cType: classID.toString(),
           ip: publicIp,
         });
-        await axios.post(`${baseUrl}/addItem/${data[0]._id}`, {
+        await axios.post(`${state.BASEURl}/addItem/${data[0]._id}`, {
           url: response.data,
           cType: classID.toString(),
           fileType: getFileType(uploadFile.type),
           ip: publicIp,
+        });
+        showAlert({
+          msg: "Upload Successfully ",
+          type: "success",
         });
         setFileLoader(false);
       }
@@ -174,27 +186,28 @@ export const App = () => {
       console.log("axios ", error);
     }
   };
-  const deleteOne = async (id, index) => {
-    
-    // try {
-    //   if (adminPassword === admin) {
-    //     setIfPassNotMatch(false);
-    //     await axios.delete(`${baseUrl}/delete-one/${data[0]._id}/${id}`);
-    //     setModalIsOpen(false);
-    //   } else {
-    //     showAlert({
-    //       msg: "Password dose not match",
-    //       type: "error",
-    //     });
-    //   }
-    // } catch (error) {}
-  };
-
- 
-
-
-  const adminPass = (val) => {
-    setAdminPassword(val);
+  const deleteOne = async () => {
+    try {
+      if (adminPassword === admin) {
+        setIfPassNotMatch(false);
+        await axios.delete(
+          `${state.BASEURl}/delete-one/${data[0]._id}/${deleteOneId}`
+        );
+        setDeleteOneModal(false);
+        getAllData();
+        showAlert({
+          msg: "Delete Successfully ",
+          type: "success",
+        });
+      } else {
+        showAlert({
+          msg: "Password dose not match",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   useEffect(() => {
@@ -209,7 +222,7 @@ export const App = () => {
       }
     }
     getSocketTodo();
-    // eslint-disable-next-line
+// eslint-disable-next-line 
   }, [socketTodo]);
 
   const getFileType = (val) => {
@@ -222,23 +235,6 @@ export const App = () => {
   };
   return (
     <>
-      <Modal
-        modalState={modalIsOpen}
-        adminPass={adminPass}
-        handleClose={()=>setModalIsOpen(false)}
-        handleSubmit={clearAll}
-        ifError={ifPassNotMatch}
-      />
-
-      <FileUpload
-        modalState={upLoadModal}
-        handleClose={()=> setUpLoadModal(false)}
-        handleSubmit={postFile}
-        postFile={setUploadFile}
-        isLoading={fileLoader}
-        progress={Number(progressPer)}
-      />
-      <ToastContainer />
       <header>
         <Nav />
       </header>
@@ -247,8 +243,8 @@ export const App = () => {
           <Input
             getClass={getClass}
             getInput={getInput}
-            handleOpenModal={()=>setModalIsOpen(true)}
-            uploadFilehandleOpen={()=>setUpLoadModal(true)}
+            handleOpenModal={() => setModalIsOpen(true)}
+            uploadFilehandleOpen={() => setUpLoadModal(true)}
             classFound={isClassFound}
           />
         </section>
@@ -261,13 +257,41 @@ export const App = () => {
                 key={i}
                 fileType={eachToDo?.fileType}
                 fileUrl={eachToDo?.url}
-                ipAdders={eachToDo?.ip}
-                deleteItem={() => deleteOne(eachToDo?._id, i)}
+                ipAdders={"10.10.10.4"}
+                deleteItem={() => {
+                  setDeleteOneId(eachToDo?._id);
+                  setDeleteOneModal(!deleteOneModal);
+                }}
               />
             ))}
           </ul>
         </section>
       </main>
+
+      <ClearALlModal
+        modalState={modalIsOpen}
+        adminPass={(val) => setAdminPassword(val)}
+        handleClose={() => setModalIsOpen(false)}
+        handleSubmit={clearAll}
+        ifError={ifPassNotMatch}
+      />
+      <DeleteOneModal
+        modalState={deleteOneModal}
+        adminPass={(val) => setAdminPassword(val)}
+        handleClose={() => setDeleteOneModal(false)}
+        handleSubmit={deleteOne}
+        ifError={ifPassNotMatch}
+      />
+
+      <FileUpload
+        modalState={upLoadModal}
+        handleClose={() => setUpLoadModal(false)}
+        handleSubmit={postFile}
+        postFile={setUploadFile}
+        isLoading={fileLoader}
+        progress={Number(progressPer)}
+      />
+      <ToastContainer />
     </>
   );
 };

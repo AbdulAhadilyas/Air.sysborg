@@ -44,9 +44,13 @@
     color: #ff8686;
     text-align: center;
   }
+
+  .delte-button span {
+  display: none;
+  }
 .text a svg {
   width: 50px;
-  filter: var(--iconFilter);
+  filter: var(--iconFilter);  
 }
 .text a:link {
   color: rgb(0, 132, 255);
@@ -55,22 +59,53 @@ a:visited {
   color: green;
 }
 
-.text{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
+.delte-button span svg {
+width:  2em;
+ }
   @media screen and (max-width: 550px) {
     .list > li {
       flex-direction: column;
     }
+
+    .delte-button button {
+     display: none;
+    }
+    .delte-button span {
+      display: inline;
+     }
+    
+
+    .info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: row;
+      width: 100%;
+      margin-right: 0px;
+      width: 100%;
+
+      padding: 0px ;
+    }
+
+    .equal {
+      padding-left: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8em;
+      min-width: 95px;
+      margin-bottom: 5px;
+
+    }
+    
    
   }
   
   @media screen and (max-width: 1200px) {
 
     .input-add-text,.button-box{
-      margin-top: 5px;
+      margin-top: 5px;    
     }
   }

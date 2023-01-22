@@ -10,7 +10,6 @@ import { useContext } from "react";
 
 
 export default function Nav() {
-  const [theme, setTheme] = useState("")
   const [currentTheme, setCurrentTheme] = useState("")
   let { state, dispatch } = useContext(GlobalContext);
 
