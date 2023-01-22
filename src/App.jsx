@@ -35,7 +35,7 @@ export const App = () => {
   const [deleteOneModal, setDeleteOneModal] = useState(false);
   const [deleteOneId, setDeleteOneId] = useState("");
 
-  const admin = "Saylani9321";
+  const admin = process.env.REACT_APP_ADMIN_PSS;
 
   useEffect(() => {
     socket.current = io("http://localhost:8000", {
@@ -257,7 +257,7 @@ export const App = () => {
                 key={i}
                 fileType={eachToDo?.fileType}
                 fileUrl={eachToDo?.url}
-                ipAdders={"10.10.10.4"}
+                ipAdders={"10.10.10.4   "}
                 deleteItem={() => {
                   setDeleteOneId(eachToDo?._id);
                   setDeleteOneModal(!deleteOneModal);

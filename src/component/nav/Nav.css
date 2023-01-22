@@ -23,6 +23,12 @@ width: 40px;
 display: none;
 }
 
+.nav-top-right{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
 
 
 @media screen and (max-width: 606px) {
