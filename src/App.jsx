@@ -57,7 +57,7 @@ export const App = () => {
     try {
       let response = await axios.get(`${state.BASEURl}/getItem/${val.classId}`);
       setData(response.data);
-      console.log(response.data);
+  
       if (response.data.error) {
         setToDoData([]);
         showAlert({
@@ -81,7 +81,7 @@ export const App = () => {
       .get(`${state.BASEURl}/getItem/${classID}`)
       .then(function (response) {
         setData(response.data);
-        console.log("response", response.data);
+   
         if (response.data.error) {
           setToDoData([]);
           showAlert({
